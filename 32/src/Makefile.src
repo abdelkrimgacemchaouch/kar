@@ -1,0 +1,92 @@
+##############################################################################
+#
+# sphotmk Makefile
+#
+##############################################################################
+
+
+B = ../bin/
+I = ../includes/*
+
+#####
+# ***Modifications Required***
+# Specify Fortran77 compiler and desired flags. 
+# These can change depending on your preference and platform.
+#####
+#F77 = newmpxlf
+F77 = ifort
+FFLAGS   = -O2 -xW -C -g -c -I../includes
+##### End of required modifications section
+
+
+FOBJS = \
+	$(B)copyseed.o \
+	$(B)execute.o \
+	$(B)genmesh.o \
+	$(B)genxsec.o \
+	$(B)random.o \
+	$(B)plnkut.o \
+	$(B)rdinput.o \
+	$(B)time_ticks.o \
+	$(B)sphotmk.o \
+	$(B)thom.o \
+	$(B)zonevols.o 
+
+#####
+# *** Optional: Specifying C parameters is only required if you are
+# using your own profiling tools or introducing C code for some
+# similar purpose.
+#####
+#CC  = 
+#CCFLAGS  = 
+#COBJS = 
+##### End of optional C parameter section
+
+
+##############################################################################
+# Rules for Fortran and C object file dependencies.
+# Note that sphotmk does not require any C files - references to C files are
+# provided as a convenience should you desire to introduce C files for
+# profilers, timing tools or something similar.  If you are introducing
+# C files, you will need to create the necessary dependency lines below.
+##############################################################################
+
+#all:  $(COBJS) $(FOBJS) $(I)
+
+all:  $(FOBJS) $(I)
+
+$(B)copyseed.o: copyseed.f $(I)params.inc $(I)randseed.inc 
+	${F77} ${FFLAGS} -o $(B)copyseed.o copyseed.f
+
+$(B)execute.o: execute.f $(I)params.inc $(I)geomz.inc $(I)globals.inc 
+	${F77} ${FFLAGS} -o $(B)execute.o execute.f
+
+$(B)genmesh.o: genmesh.f $(I)params.inc $(I)geomz.inc $(I)globals.inc
+	${F77} ${FFLAGS} -o $(B)genmesh.o genmesh.f
+
+$(B)genxsec.o: genxsec.f $(I)params.inc $(I)geomz.inc $(I)globals.inc
+	${F77} ${FFLAGS} -o $(B)genxsec.o genxsec.f
+
+$(B)random.o: random.f
+	${F77} ${FFLAGS} -o $(B)random.o random.f
+
+$(B)plnkut.o: plnkut.f
+	${F77} ${FFLAGS} -o $(B)plnkut.o plnkut.f
+
+$(B)rdinput.o: rdinput.f $(I)params.inc $(I)geomz.inc $(I)globals.inc 
+	${F77} ${FFLAGS} -o $(B)rdinput.o rdinput.f
+
+$(B)time_ticks.o: time_ticks.f
+	${F77} ${FFLAGS} -o $(B)time_ticks.o time_ticks.f
+
+$(B)sphotmk.o: sphotmk.f $(I)params.inc $(I)globals.inc $(I)geomz.inc $(I)randseed.inc $(I)times.inc 
+	${F77} ${FFLAGS} -o $(B)sphotmk.o sphotmk.f
+
+$(B)thom.o: thom.f
+	${F77} ${FFLAGS} -o $(B)thom.o thom.f
+
+$(B)zonevols.o: zonevols.f $(I)params.inc $(I)geomz.inc
+	${F77} ${FFLAGS} -o $(B)zonevols.o zonevols.f
+
+
+
